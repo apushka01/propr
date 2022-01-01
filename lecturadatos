@@ -1,0 +1,36 @@
+% Importamos los datos
+readpot = input('Nombre del archivo potenciales (colocar entre '')');
+readtime = input('Nombre del archivo tiempos (colocar entre '')');
+
+pot = readmatrix(readpot);
+tiempos = readmatrix(readtime);
+
+% Como solo nos interesa el último PA, eliminamos todas las entradas
+% que haya antes de este. El último se produce entre el ms 29.000 y
+% 30.000, por tanto:
+% indices = ;
+pot([1:2900000],:) = [];
+tiempos([1:2900000],:) = [];
+
+% Obtenemos el valor de la Vmáx, Vrep, Vpp y 0.1Vpp (vf).
+vmax = max(pot);
+vrep = min(pot);
+vpp = abs(vmax)-abs(vrep);
+vpp01 = 0.1*vpp;
+vf = abs(vrep)-abs(vpp01);
+
+% Ahora, calculamos la APD90. Como el valor de vf exacto es posible que no
+% está en la lista de datos, utilizamos el valor más cercano posible a este.
+ivmax = find(pot==vmax);
+tvmax = tiempos(ivmax);
+
+[~,ivf] = min(abs(abs(pot)-abs(vf)));
+tvf = tiempos(ivf);
+
+apd90 = tvf - tvmax;
+
+% Imprimimos en pantalla los datos obtenidos
+PotencialMaximo = vmax
+PotencialReposo = vrep
+PotencialPicoaPico = vpp
+APD90 = apd90
